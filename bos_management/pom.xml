@@ -28,7 +28,7 @@
                 <version>2.2</version>
                 <configuration>
                     <port>8080</port>
-                    <path>/</path>
+                    <path>/bos_management_web</path>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+</head>
+<body class="easyui-layout">
+	<!-- 每个div表示一个区域 -->
+	<div title="速运快递" style="height: 100px" data-options="region:'north'">北部区域</div>
+	<div title="系统菜单" style="width: 200px" data-options="region:'west'">
+		<!-- 制作一个折叠面板 -->
+		<div class="easyui-accordion" data-options="fit:true">
+			<!-- 每个div表示一个子面板 -->
+			<div data-options="iconCls:'icon-cut'" title="面板一">
+				<a type="button" id="mybutton" class="easyui-linkbutton">添加选项卡</a>
+				<script type="text/javascript">
+					$(function(){
+						//页面加载完成后，为上面的按钮绑定单击事件
+						$("#mybutton").click(function(){
+							//判断当前选项卡是否存在
+							var e = $("#mytabs").tabs("exists","测试面板");
+							if(e){
+								//已经存在了，只需要选中
+								$("#mytabs").tabs("select","测试面板");
+							}else{
+								//调用easyUI提供的tabs对象的add方法，动态添加一个选项卡面板
+								$("#mytabs").tabs("add",{
+									title:'测试面板',
+									content:'11111',
+									closable:true
+								});
+							}
+						});
+					});
+				</script>
+			</div>
+			<div title="面板二">面板二</div>
+			<div title="面板三">面板三</div>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<!-- 制作一个选项卡面板 -->
+		<div id="mytabs" class="easyui-tabs" data-options="fit:true">
+			<!-- 每个div表示一个子面板 -->
+			<div data-options="iconCls:'icon-cut',closable:true" title="面板一">面板一</div>
+			<div title="面板二">面板二</div>
+			<div title="面板三">面板三</div>
+		</div>
+	</div>
+	<div style="width: 100px" data-options="region:'east'">东部区域</div>
+	<div style="height: 50px" data-options="region:'south'">南部区域</div>
+</body>
+</html>

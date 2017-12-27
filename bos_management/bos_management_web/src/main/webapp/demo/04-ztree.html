@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="../js/easyui/themes/icon.css">
+<script type="text/javascript" src="../js/jquery-1.8.3.js"></script>
+<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+<!-- 引入ztree资源文件 -->
+<link rel="stylesheet" href="../js/ztree/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js"></script>
+</head>
+<body class="easyui-layout">
+	<!-- 每个div表示一个区域 -->
+	<div title="速运快递" style="height: 100px" data-options="region:'north'">北部区域</div>
+	<div title="系统菜单" style="width: 200px" data-options="region:'west'">
+		<!-- 制作一个折叠面板 -->
+		<div class="easyui-accordion" data-options="fit:true">
+			<!-- 每个div表示一个子面板 -->
+			<div data-options="iconCls:'icon-cut'" title="面板一">
+				<a type="button" id="mybutton" class="easyui-linkbutton">添加选项卡</a>
+				<script type="text/javascript">
+					$(function(){
+						//页面加载完成后，为上面的按钮绑定单击事件
+						$("#mybutton").click(function(){
+							//判断当前选项卡是否存在
+							var e = $("#mytabs").tabs("exists","测试面板");
+							if(e){
+								//已经存在了，只需要选中
+								$("#mytabs").tabs("select","测试面板");
+							}else{
+								//调用easyUI提供的tabs对象的add方法，动态添加一个选项卡面板
+								$("#mytabs").tabs("add",{
+									title:'测试面板',
+									content:'11111',
+									closable:true
+								});
+							}
+						});
+					});
+				</script>
+			</div>
+			<div title="面板二">
+				<!-- 基于标准json数据创建ztree -->
+				<ul id="myztree1" class="ztree"></ul>
+				<script type="text/javascript">
+					$(function(){
+						//定义一个变量，设置ztree的相关属性
+						var setting1 = {};
+						//定义节点数据
+						var zNodes = [
+						              {name:'节点一',children:[
+						                                    	{name:'节点一_1'},
+						                                    	{name:'节点一_2'}
+						                                    ]},//每个json表示一个节点
+						              {name:'节点二'},
+						              {name:'节点三'}
+						              ];
+						//调用init初始化方法创建ztree
+						$.fn.zTree.init($("#myztree1"), setting1, zNodes);
+					});
+				</script>
+			</div>
+			<div title="面板三">
+				<!-- 基于简单json数据创建ztree -->
+				<ul id="myztree2" class="ztree"></ul>
+				<script type="text/javascript">
+					$(function(){
+						//定义一个变量，设置ztree的相关属性
+						var setting2 = {
+								data: {
+									simpleData: {
+										enable: true//启用简单格式的json数据
+									}
+								}
+						};
+						//定义节点数据
+						var zNodes2 = [
+						              {id:'001',pId:'0',name:'节点一'},//每个json表示一个节点
+						              {id:'002',pId:'001',name:'节点二'},
+						              {id:'003',pId:'001',name:'节点三'}
+						              ];
+						//调用init初始化方法创建ztree
+						$.fn.zTree.init($("#myztree2"), setting2, zNodes2);
+					});
+				</script>
+			</div>
+			<div  title="面板四">
+				<!-- 发送ajax请求获取json数据，构造ztree -->
+				<ul id="myztree3" class="ztree"></ul>
+				<script type="text/javascript">
+					$(function(){
+						$.post('../data/menu.json',function(data){
+							//定义一个变量，设置ztree的相关属性
+							var setting3 = {
+									data: {
+										simpleData: {
+											enable: true//启用简单格式的json数据
+										}
+									},
+									callback: {
+										//绑定单击事件
+										onClick: function(event, treeId, treeNode){
+											if(treeNode.page != undefined){
+												var e = $("#mytabs").tabs("exists",treeNode.name);
+												if(e){
+													//已经存在了，只需要选中
+													$("#mytabs").tabs("select",treeNode.name);
+												}else{
+													//需要打开选项卡面板
+													//调用easyUI提供的tabs对象的add方法，动态添加一个选项卡面板
+													$("#mytabs").tabs("add",{
+														title:treeNode.name,
+														content:'<iframe width="100%" height="100%" style="border: 0" src="../'+treeNode.page+'"></iframe>',
+														closable:true
+													});
+												}
+											}
+										}
+									}
+							};
+							//调用init初始化方法创建ztree
+							$.fn.zTree.init($("#myztree3"), setting3, data);
+						},'json');
+					});
+				</script>
+				
+			</div>
+		</div>
+	</div>
+	<div data-options="region:'center'">
+		<!-- 制作一个选项卡面板 -->
+		<div id="mytabs" class="easyui-tabs" data-options="fit:true">
+			<!-- 每个div表示一个子面板 -->
+			<div data-options="iconCls:'icon-cut',closable:true" title="面板一">
+				
+			</div>
+			<div title="面板二">面板二</div>
+			<div title="面板三">面板三</div>
+		</div>
+	</div>
+	<div style="width: 100px" data-options="region:'east'">东部区域</div>
+	<div style="height: 50px" data-options="region:'south'">南部区域</div>
+</body>
+</html>
