@@ -30,7 +30,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../data/standard.json",
+					url : "../../standardAction_pageQuery.action",
 					idField : 'id',
 					columns : columns
 				});
@@ -52,7 +52,14 @@
 				text : '修改',
 				iconCls : 'icon-edit',
 				handler : function(){
-					alert('修改');
+                    var rows = $("#grid").datagrid("getSelections");
+                    if(rows.length!=1){
+                        $.messager.alert("提示信息","只能修改一行！");
+                    }else {
+                        var data = rows[0];
+                        $("#standardWindow").form("load",data);
+                        $("#standardWindow").window("open");
+                    }
 				}
 			},{
 				id : 'button-delete',
@@ -126,6 +133,7 @@
 		<div class="easyui-window" title="对收派标准进行添加或者修改" id="standardWindow"
 			 collapsible="true" minimizable="true" maximizable="true" modal="true" closed="true" style="width:600px;top:50px;left:200px">
 			<div region="north" style="height:31px;overflow:hidden;" split="false" border="false">
+				<!--工具栏-->
 				<div class="datagrid-toolbar">
 					<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
 					<script type="text/javascript">
@@ -142,7 +150,7 @@
 					</script>
 				</div>
 			</div>
-
+            <!--表单-->
 			<div region="center" style="overflow:auto;padding:5px;" border="false">
 				
 				<form id="standardForm" action="../../standardAction_save.action" method="post">

@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
 		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 		<script type="text/javascript" src="../../js/highcharts/highcharts.js"></script>
+        <script type="text/javascript" src="../../js/utils/SerializeJson.js"></script>
 		<script type="text/javascript">
 			function doAdd(){
 				$('#addWindow').window("open");
@@ -119,17 +120,17 @@
 					return "" ;
 				}
 			}, {
-				field : 'addresskey',
+				field : 'keyWords',
 				title : '关键字',
 				width : 120,
 				align : 'center'
 			}, {
-				field : 'startnum',
+				field : 'startNum',
 				title : '起始号',
 				width : 100,
 				align : 'center'
 			}, {
-				field : 'endnum',
+				field : 'endNum',
 				title : '终止号',
 				width : 100,
 				align : 'center'
@@ -159,7 +160,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../data/sub_area.json",
+					url : "../../subarea_queryPage.action",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow
@@ -195,9 +196,19 @@
 			        height: 400,
 			        resizable:false
 			    });
-				$("#btn").click(function(){
-					alert("执行查询...");
+				$("#searchBtn").click(function(){
+                    //将表单中的数据取出，当做对象传给表格
+                    var jsonObject = $("#searchForm").serializeJson();
+                    $("#grid").datagrid("load", jsonObject);
+                    $("#searchWindow").window("close");
 				});
+                $("#save").click(function () {
+                    var v = $("#subareaForm").form("validate");
+                    if(v) {
+                        $("#subareaForm").submit();
+                    }
+                });
+
 			});
 		
 			function doDblClickRow(){
@@ -229,7 +240,7 @@
 							<td>
 								<input class="easyui-combobox" name="area.id"
 									 data-options="valueField:'id',textField:'name',
-									 url:''" />
+									 url:'../../areaAction_listajax.action'" />
 							</td>
 						</tr>
 						<tr>
@@ -285,7 +296,7 @@
 		<!-- 查询分区 -->
 		<div class="easyui-window" title="查询分区窗口" id="searchWindow" collapsible="false" minimizable="false" maximizable="false" style="top:20px;left:200px">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form>
+				<form id="searchForm">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">查询条件</td>
@@ -293,19 +304,19 @@
 						<tr>
 							<td>省</td>
 							<td>
-								<input type="text" name="province" class="easyui-validatebox" required="true" />
+								<input type="text" name="area.province" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
 							<td>市</td>
 							<td>
-								<input type="text" name="city" class="easyui-validatebox" required="true" />
+								<input type="text" name="area.city" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
 							<td>区（县）</td>
 							<td>
-								<input type="text" name="district" class="easyui-validatebox" required="true" />
+								<input type="text" name="area.district" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
@@ -317,11 +328,11 @@
 						<tr>
 							<td>关键字</td>
 							<td>
-								<input type="text" name="addresskey" class="easyui-validatebox" required="true" />
+								<input type="text" name="keyWords" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2"><a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a> </td>
+							<td colspan="2"><a id="searchBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a> </td>
 						</tr>
 					</table>
 				</form>

@@ -14,6 +14,7 @@
 		<script type="text/javascript" src="../../js/easyui/ext/jquery.portal.js"></script>
 		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
 		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+        <script src="../../js/utils/SerializeJson.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			function doAdd(){
 				$('#addWindow').window("open");
@@ -32,7 +33,41 @@
 			}
 			
 			function doAssociations(){
-				$('#customerWindow').window('open');
+                var rows = $("#grid").datagrid("getSelections");
+                if(rows.length!=1) {
+                    $.messager.alert("提示", "请选择一个定区操作!", "warning");
+                }else{
+                    //打开定区关联客户窗口
+					$('#customerWindow').window('open');
+                    //清空下拉框
+					$("#noassociationSelect").empty();
+					$("#associationSelect").empty();
+					$.post("../../fixedareaAction_findCustomerListNotAssociation.action",
+						function (data) {
+							for(var i = 0;i < data.length;i++) {
+								var id = data[i].id;
+								var telephone = data[i].telephone;
+								var username = data[i].username;
+								username = username+"("+telephone+")";
+								$("#noassociationSelect").append(
+								    "<option value='"+id+"'>"+username+"</option>");
+                            }
+                        })
+					var id = rows[0].id;
+					$.post("../../fixedareaAction_findCustomerListHasAssociation.action",{
+					    "id":id
+					},function (data) {
+						for(var i = 0;i < data.length;i++) {
+							var id = data[i].id;
+							var telephone = data[i].telephone;
+							var name = data[i].username;
+							name = name+"("+telephone+")";
+							$("#associationSelect").append(
+							    "<option value='"+id+"'>"+name+"</option>"
+							);
+                        }
+                    })
+				}
 			}
 			
 			//工具栏
@@ -154,9 +189,46 @@
 			        resizable:false
 			    });
 				$("#btn").click(function(){
-					alert("执行查询...");
+					var jsonObject = $("#searchForm").serializeJson();
+                    $("#grid").datagrid("load", jsonObject);
+                    $("#searchWindow").window("close");
 				});
-				
+
+				//添加之保存按钮
+                $("#save").click(function () {
+                    var v = $("#fixedAreaForm").form("validate");
+                    if(v) {
+                        $("#fixedAreaForm").submit();
+                    }
+                });
+
+                //关联快递员之关联按钮
+				$("#associationCourierBtn").click(function () {
+                    var rows = $("#grid").datagrid("getSelections");
+                    //为隐藏域赋值
+                    $("#courierFixedAreaId").val(rows[0].id);
+                    //进行表单校验
+                    var v = $("#courierForm").form("validate");
+                    if(v) {
+                    	$("#courierForm").submit();
+                    }
+                });
+				//为左右移动按钮绑定事件，实现移动效果
+				$("#toRight").click(function () {
+					$("#associationSelect").append($("#noassociationSelect option:selected"));
+                });
+				$("#toLeft").click(function () {
+					$("#noassociationSelect").append($("#associationSelect option:selected"));
+                });
+				//为关联客户按钮绑定事件
+				$("#associationBtn").click(function () {
+                    var rows = $("#grid").datagrid("getSelections");
+                    //为隐藏域赋值(定区id)
+                    $("#id").val(rows[0].id);
+                    //选中右侧下拉框中所有option
+                    $("#associationSelect option").attr("selected", "selected");
+                    $("#customerForm").submit();
+                })
 			});
 		
 			function doDblClickRow(){
@@ -280,7 +352,6 @@
 			<div style="height:31px;overflow:hidden;" split="false" border="false">
 				<div class="datagrid-toolbar">
 					<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
-					</script>
 				</div>
 			</div>
 
@@ -322,7 +393,7 @@
 		<!-- 查询定区 -->
 		<div class="easyui-window" title="查询定区窗口" id="searchWindow" collapsible="false" minimizable="false" maximizable="false" style="top:20px;left:200px">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form>
+				<form id="searchForm">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">查询条件</td>
@@ -336,7 +407,7 @@
 						<tr>
 							<td>所属单位</td>
 							<td>
-								<input type="text" name="courier.company" class="easyui-validatebox" required="true" />
+								<input type="text" name="company" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
@@ -398,18 +469,13 @@
 							<td>
 								<!-- 存放定区编号 -->
 								<input type="hidden" name="id" id="courierFixedAreaId" />
-								<input data-options="ditable:false, url:'../../courierAction_listajax.action',valueField:'id',textField:'name'"
-									 type="text" name="courierId" class="easyui-combobox" required="true" />
+								<input data-options="ditable:false, url:'../../courierAction_listajax.action',valueField:'id',textField:'name'" type="text" name="courierId" class="easyui-combobox" required="true" />
 							</td>
 						</tr>
 						<tr>
 							<td>选择收派时间</td>
 							<td>
-								<select required="true" class="easyui-combobox" name="takeTimeId">
-									<option>请选择</option>
-									<option value="1">北京早班</option>
-									<option value="2">北京晚班</option>
-								</select>
+								<input data-options="ditable:false, url:'../../taketimeAction_listajax.action',valueField:'id',textField:'name'" type="text" name="takeTimeId" class="easyui-combobox" required="true" />
 								<!-- <input type="text" name="takeTimeId" class="easyui-combobox" required="true" /> -->
 							</td>
 						</tr>

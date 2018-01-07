@@ -6,6 +6,8 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:soap="http://cxf.apache.org/bindings/soap"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
@@ -15,7 +17,11 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/data/jpa
-	   http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+	   http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+	   http://cxf.apache.org/bindings/soap
+	   http://cxf.apache.org/schemas/configuration/soap.xsd
+       http://cxf.apache.org/jaxws
+	   http://cxf.apache.org/schemas/jaxws.xsd">
     <!--连接池-->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
@@ -54,4 +60,6 @@
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <!--整合Spring data jpa-->
     <jpa:repositories base-package="com.itheima.bos.dao"/>
+    <!--配置CXF客户端代理对象，用于远程调用CRM服务-->
+    <jaxws:client id="crmClient" serviceClass="com.itheima.crm.service.CustomerService" address="http://localhost:8081/crm/services/customer"></jaxws:client>
 </beans>
