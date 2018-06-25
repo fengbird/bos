@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:task="http://www.springframework.org/schema/task"
        xmlns:jaxws="http://cxf.apache.org/jaxws"
        xmlns:soap="http://cxf.apache.org/bindings/soap"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd
-       http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop.xsd
-       http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/data/jpa
-	   http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-	   http://cxf.apache.org/bindings/soap
-	   http://cxf.apache.org/schemas/configuration/soap.xsd
-       http://cxf.apache.org/jaxws
-	   http://cxf.apache.org/schemas/jaxws.xsd">
+       xsi:schemaLocation="
+						http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://www.springframework.org/schema/data/jpa
+						http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+						http://cxf.apache.org/bindings/soap
+						http://cxf.apache.org/schemas/configuration/soap.xsd
+						http://cxf.apache.org/jaxws
+						http://cxf.apache.org/schemas/jaxws.xsd
+						">
     <!--连接池-->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
@@ -57,9 +57,60 @@
     <!--组件扫描@Server @Controller @Repository-->
     <context:component-scan base-package="com.itheima.bos.service,com.itheima.bos.web"/>
     <!--事务注解支持-->
-    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
     <!--整合Spring data jpa-->
     <jpa:repositories base-package="com.itheima.bos.dao"/>
     <!--配置CXF客户端代理对象，用于远程调用CRM服务-->
-    <jaxws:client id="crmClient" serviceClass="com.itheima.crm.service.CustomerService" address="http://localhost:8081/crm/services/customer"></jaxws:client>
+    <jaxws:client id="crmClient" address="http://localhost:8081/crm/services/customer" serviceClass="com.itheima.crm.service.CustomerService" />
+    <!--发布CXF服务-->
+    <bean id="orderService" class="com.itheima.bos.service.impl.OrderServiceImpl" />
+    <jaxws:server id="bos" address="/order">
+        <jaxws:serviceBean>
+            <ref bean="orderService" />
+        </jaxws:serviceBean>
+    </jaxws:server>
+    <!--注册安全管理器-->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <!--注册realm-->
+        <!--<property name="realm" ref="BOSRealm"></property>-->
+        <property name="realms">
+            <ref bean="BOSRealm"></ref>
+        </property>
+    </bean>
+    <!--配置Shiro核心Filter-->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!--安全管理器-->
+        <property name="securityManager" ref="securityManager" />
+        <!--未认证，跳转到哪个页面-->
+        <property name="loginUrl" value="/login.html" />
+        <!--登录页面-->
+        <property name="successUrl" value="/index.html" />
+        <!--认证后，没有权限跳转页面-->
+        <property name="unauthorizedUrl" value="/unauthorized.html" />
+        <!--shiro URL控制过滤器规则-->
+        <property name="filterChainDefinitions">
+            <value>
+                /favicon.ico = anon
+                /login.html* = anon
+                /userAction_login.action* = anon
+                /validatecode.jsp* = anon
+                /css/** = anon
+                /js/** = anon
+                /images/** = anon
+                /services/** = anon
+                /areaAction_pageQuery.action = perms["area"]
+                /areaAction_pageQuery.action = roles["admin"]
+                /** = authc
+            </value>
+        </property>
+    </bean>
+    <!--基于spring自动代理方式为Service类创建代理方式，实现权限控制-->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
+        <!--强制使用cglib方式创建代理对象-->
+        <property name="proxyTargetClass" value="true" />
+    </bean>
+    <!--配置切面-->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager" />
+    </bean>
 </beans>

@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @create 2018-01-05-20:27.
  */
 public interface AreaRepository extends JpaRepository<Area,String>{
+    Area findAreaByProvinceAndCityAndDistrict(String province,String city,String district);
 }

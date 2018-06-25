@@ -1,19 +1,9 @@
 package com.itheima.bos.domain.base;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  * @description:定区
@@ -129,4 +119,19 @@ public class FixedArea {
 		this.company = company;
 	}
 
+	@Override
+	public String toString() {
+		return "FixedArea{" +
+				"id='" + id + '\'' +
+				", fixedAreaName='" + fixedAreaName + '\'' +
+				", fixedAreaLeader='" + fixedAreaLeader + '\'' +
+				", telephone='" + telephone + '\'' +
+				", company='" + company + '\'' +
+				", operatingTime=" + operatingTime +
+				", operator='" + operator + '\'' +
+				", operatingCompany='" + operatingCompany + '\'' +
+				", subareas=" + subareas +
+				", couriers=" + couriers +
+				'}';
+	}
 }

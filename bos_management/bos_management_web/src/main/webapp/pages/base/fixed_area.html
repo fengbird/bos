@@ -52,7 +52,7 @@
 								$("#noassociationSelect").append(
 								    "<option value='"+id+"'>"+username+"</option>");
                             }
-                        })
+                        },"json");
 					var id = rows[0].id;
 					$.post("../../fixedareaAction_findCustomerListHasAssociation.action",{
 					    "id":id
@@ -66,7 +66,7 @@
 							    "<option value='"+id+"'>"+name+"</option>"
 							);
                         }
-                    })
+                    },"json");
 				}
 			}
 			
@@ -224,7 +224,7 @@
 				$("#associationBtn").click(function () {
                     var rows = $("#grid").datagrid("getSelections");
                     //为隐藏域赋值(定区id)
-                    $("#id").val(rows[0].id);
+                    $("#customerFixedAreaId").val(rows[0].id);
                     //选中右侧下拉框中所有option
                     $("#associationSelect option").attr("selected", "selected");
                     $("#customerForm").submit();

@@ -18,29 +18,55 @@ import java.util.List;
 @Service
 @Transactional
 public class CustomerServiceImpl implements CustomerService{
-    @Autowired
-    private CustomerRepository customerRepository;
+        @Autowired
+        private CustomerRepository customerRepository;
 
-    @Override
-    public List<Customer> findAll() {
-        return customerRepository.findAll();
-    }
-
-    @Override
-    public List<Customer> findCustomerListNotAssociation() {
-        return customerRepository.findByFixedAreaIdIsNull();
-    }
-
-    @Override
-    public List<Customer> findCustomerListHasAssociation(String fixedAreaId) {
-        return customerRepository.findByFixedAreaId(fixedAreaId);
-    }
-
-    @Override
-    public void assignCustomersToDecidedzone(String fixedAreaId, Integer[] customerIds) {
-        customerRepository.updateFixedAreaIdNull(fixedAreaId);
-        for (Integer id : customerIds) {
-            customerRepository.assiginCustomersToFixedArea(fixedAreaId, id);
+        @Override
+        public List<Customer> findAll() {
+            return customerRepository.findAll();
         }
+
+        @Override
+        public List<Customer> findCustomerListNotAssociation() {
+            return customerRepository.findByFixedAreaIdIsNull();
+        }
+
+        @Override
+        public List<Customer> findCustomerListHasAssociation(String fixedAreaId) {
+            return customerRepository.findByFixedAreaId(fixedAreaId);
+        }
+
+        @Override
+        public void assignCustomersToDecidedzone(String fixedAreaId, Integer[] customerIds) {
+            customerRepository.updateFixedAreaIdNull(fixedAreaId);
+            for (Integer id : customerIds) {
+                customerRepository.assiginCustomersToFixedArea(fixedAreaId, id);
+            }
+        }
+
+        @Override
+        public void regist(Customer customer) {
+            customerRepository.save(customer);
+        }
+
+        @Override
+        public Customer findCustomerByTelephone(String telephone) {
+            Customer customer = customerRepository.findCustomerByTelephone(telephone);
+            return customer;
+        }
+
+        @Override
+        public void upateType(String telephone) {
+            customerRepository.updateTypeByTelephone(telephone);
+        }
+
+        @Override
+        public Customer login(String telephone, String password) {
+            return customerRepository.findCustomerByTelephoneAndPassword(telephone,password);
+        }
+
+        @Override
+        public String findFixedAreaIdByAddress(String address) {
+        return customerRepository.findFixedAreaIdByAddress(address);
     }
 }

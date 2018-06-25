@@ -3,6 +3,7 @@ package com.itheima.bos.service.impl;
 import com.itheima.bos.dao.CourierRepository;
 import com.itheima.bos.domain.base.Courier;
 import com.itheima.bos.service.CourierService;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -31,6 +32,7 @@ public class CourierServiceImpl implements CourierService {
 
     @Override
     public Page<Courier> queryPage(Courier courier,Pageable pageable) {
+        //设置Example匹配器
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                 .withMatcher("company", ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.CONTAINING))
                 .withMatcher("standard.name", ExampleMatcher.GenericPropertyMatcher.of(ExampleMatcher.StringMatcher.CONTAINING));
@@ -39,6 +41,7 @@ public class CourierServiceImpl implements CourierService {
         return couriers;
     }
 
+    @RequiresPermissions("courier:delete")
     @Override
     public void deleteBatch(String ids) {
         String[] ids_arr = ids.split(",");

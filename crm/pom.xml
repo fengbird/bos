@@ -12,6 +12,8 @@
     <packaging>war</packaging>
 
     <artifactId>crm</artifactId>
+    <name>crm</name>
+
     <build>
         <plugins>
             <plugin>
@@ -25,5 +27,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

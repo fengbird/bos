@@ -11,7 +11,7 @@ import java.util.Date;
 @Table(name = "T_CUSTOMER")
 public class Customer {
 	@Id
-	@GeneratedValue()
+	@GeneratedValue
 	@Column(name = "C_ID")
 	private Integer id; // 主键id
 	@Column(name = "C_USERNAME")

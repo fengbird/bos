@@ -57,7 +57,7 @@
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <!--整合Spring data jpa-->
     <jpa:repositories base-package="com.itheima.crm.dao"/>
-    <bean id="customerService" class="com.itheima.crm.service.impl.CustomerServiceImpl"></bean>
+    <bean id="customerService" class="com.itheima.crm.service.impl.CustomerServiceImpl"/>
     <jaxws:server id="crm" address="/customer">
         <jaxws:serviceBean>
             <ref bean="customerService" />

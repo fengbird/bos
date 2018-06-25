@@ -151,7 +151,14 @@
 					columns : columns,
 					onDblClickRow : doDblClickRow,
 					onAfterEdit : function(rowIndex, rowData, changes){
-						console.info(rowData);
+						$.post("../../waybillAction_save.action",rowData,function (data) {
+                            alert(1111);
+							if(data=='0'){
+							    //保存失败，弹出提示
+                                $.messager.alert("提示信息", "运单信息录入失败", "error");
+							}
+                        });
+					    console.info(rowData);
 						editIndex = undefined;
 					}
 				});

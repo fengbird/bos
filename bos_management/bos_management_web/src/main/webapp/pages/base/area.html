@@ -45,6 +45,10 @@
             function doSearch() {
                 $("#searchWindow").window("open");
             }
+            
+            function doExportPDF() {
+                window.location.href = "../../areaAction_exportPDF.action"
+            }
 
 			//工具栏
 			var toolbar = [ {
@@ -67,6 +71,11 @@
 				text : '导入',
 				iconCls : 'icon-redo',
                 handler : doImport
+			},{
+			    id : 'button-export',
+                text : '导出',
+                iconCls : 'icon-search',
+                handler : doExportPDF
 			},{
 			    id : 'button-search',
 				text : '查询',
@@ -123,7 +132,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../areaAction_queryPage.action",
+					url : "../../areaAction_pageQuery.action",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow

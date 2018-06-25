@@ -133,7 +133,8 @@
 				width : 80,
 				align : 'center',
 				formatter : function(data,row, index){
-					if(data==null){
+				    console.log(data);
+					if(data!=1){
 						return "正常使用"
 					}else{
 						return "已作废";
